@@ -41,21 +41,27 @@ Unless specifically stated, these errors may occur within any endpoint.
 # User Management
 The following section contains endpoints related to creating, updating and deleting users as well as managing their access rights and permissions. 
 ## Get User Info
-### ```GET /user/<username>```
+### ```GET /admin/users/<username>```
 
 ### Responses:
 200 OK
 ```json
 {
     "username":                     {"type": "string"},
-    "password":                     {"type": "string"},
-    "autoGeneratePassword":         {"type": "boolean"},
-    "changePasswordOnFirstLogin":   {"type": "boolean"},
+    "changePasswordOnNextLogin":    {"type": "boolean"},
     "fname":                        {"type": "string"},
     "lname":                        {"type": "string"},
     "blockLogin":                   {"type": "boolean"},
     "blockLoginReason":             {"type": "string"},
-    "email":                        {"type": "string"}
+    "email":                        {"type": "string"},
+    "permissions":                  {"type": "array"},
+    "storage":                      {
+                                        "quota":        {"type": "number"},
+                                        "quotaGroup":   {"type": "string"},
+                                        "usage":        {"type": "number"},
+                                        "absolutePath": {"type": "string"}
+
+                                    }
 }
 ```
 
@@ -68,7 +74,7 @@ The following section contains endpoints related to creating, updating and delet
 
 
 ## Create New user
-### ```POST /user/<username>```
+### ```POST /admin/users/<username>```
 #### Expected Schema:
 ```json
 {
@@ -80,10 +86,12 @@ The following section contains endpoints related to creating, updating and delet
     "lname":                        {"type": "string"},
     "blockLogin":                   {"type": "boolean"},
     "blockLoginReason":             {"type": "string"},
-    "email":                        {"type": "string"}
+    "email":                        {"type": "string"},
+    "storageQuota":                 {"type": "number"},
+    "quotaGroup":                   {"type": "string"}
 }
 
-"required": ["username", "autoGeneratePassword", "email"]
+"required": ["username", "autoGeneratePassword", "email", "storageQuota"]
 ```
 ### Responses:
 201 CREATED
@@ -106,9 +114,9 @@ The following section contains endpoints related to creating, updating and delet
 ```
 
 ## Delete Single User
-### ```DELETE /user/<username>```
+### ```DELETE /admin/users/<username>```
 ### Responses:
-200 OK
+204 OK
 ```json
 {
     "message": "User <username> has been deleted"
@@ -117,12 +125,12 @@ The following section contains endpoints related to creating, updating and delet
 404 NOT FOUND
 ```json
 {
-    "message": "User <username> does not exist"
+    "error": "User <username> does not exist"
 }
 ```
 
 ## Delete Multiple Users
-### ```DELETE /users```
+### ```DELETE /admin/users```
 #### Expected Schema:
 ```json
 {
@@ -132,19 +140,73 @@ The following section contains endpoints related to creating, updating and delet
 "required": ["usersToDelete"]
 ```
 ### Responses:
-200 OK
+204 OK
 ```json
 {
-    "message": "user <username> has been deleted"
-}
-```
-404 NOT FOUND:
-```json
-{
-    "message": "User <username> does not exist"
+    "message":      "Successfully deleted <numberOfDeletedUsers>",
+    "deletedUsers": {"type": "array"},
+    "doNotExist":   {"type": "array"}
 }
 ```
 
+# Permission Management
+## List all Permissions
+### ```GET /admin/permissions```
+### Responses:
+200 OK
+```json
+{
+    "permissions": [
+        {
+            "name":         {"type": "string"},
+            "description":  {"type": "string"},
+            "members":      {"type": "array"} 
+        }
+        
+        ...
+    ]
+}
+```
+
+## Get Members of Permission
+### ```GET /admin/permissions/<permissionName>```
+### Responses:
+200 OK
+```json
+{
+    "permission": {"type": "string"},
+    "members":    {"type": "array"}
+}
+```
+
+
+404 NOT FOUND
+```json
+{
+    "error": "Permission <permissionName> does not exist"
+}
+```
+
+## Get User Permissions
+### ```GET /admin/<username>/permissions```
+### Responses:
+200 OK
+```json
+{
+    "username":    "<username>",
+    "permissions": {"type": "array"}
+}
+```
+
+404 NOT FOUND
+```json
+{
+    "error": "User <username> does not exist"
+}
+```
+
+
+# Authentication
 ## Authenticate and Receive token
 ### ```POST /authenticate```
 > This endpoint does *not* require the **token** header, as it is the one that generates it. Use this token as the *token* header for future requests to authenticate yourself
