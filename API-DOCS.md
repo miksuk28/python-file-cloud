@@ -6,6 +6,7 @@
 **NOTE: Unless explicitly stated, all requests must contain a valid token header. On authentication failure, returns 403 ACCESS DENIED**
 
 ## Generic API Errors
+Unless specifically stated, these errors may occur within any endpoint.
 ### 400 BAD REQUEST - Missing Token: 
 ```json
 {
