@@ -38,6 +38,7 @@
 ```
 
 # User Management
+The following section contains endpoints related to creating, updating and deleting users as well as managing their access rights and permissions. 
 ## Get User Info
 ### ```GET /user/<username>```
 
