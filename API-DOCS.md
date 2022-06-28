@@ -17,8 +17,8 @@
 ```json
 {
     "error":            "JSON validation error",
-    "errorMessage":     <JSONScema Error Message>,
-    "expectedSchema":   <schema>
+    "errorMessage":     "<JSONScema Error Message>",
+    "expectedSchema":   "<schema>"
 }
 ```
 
@@ -81,7 +81,7 @@
     "email":                        {"type": "string"}
 }
 
-required: ["username", "autoGeneratePassword", "email"]
+"required": ["username", "autoGeneratePassword", "email"]
 ```
 ### Responses:
 201 CREATED
@@ -127,7 +127,7 @@ required: ["username", "autoGeneratePassword", "email"]
     "usersToDelete": {"type": "array"}
 }
 
-required: ["usersToDelete"]
+"required": ["usersToDelete"]
 ```
 ### Responses:
 200 OK
@@ -153,7 +153,7 @@ required: ["usersToDelete"]
     "password" : {"type" : "string"}
 }
 
-required: ["username", "password"]
+"required": ["username", "password"]
 ```
 
 ### Responses:
