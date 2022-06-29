@@ -174,13 +174,14 @@ The following section contains endpoints related to creating, updating and delet
 200 OK
 ```json
 {
-    "permission": {"type": "string"},
-    "members":    {"type": "array"}
+    "permission":   {"type": "string"},
+    "members":      {"type": "array"},
+    "description":  {"type": "string"}
 }
 ```
 
 
-404 NOT FOUND
+404 NOT FOUND - Permission does not exist
 ```json
 {
     "error": "Permission <permissionName> does not exist"
@@ -205,6 +206,93 @@ The following section contains endpoints related to creating, updating and delet
 }
 ```
 
+## Check if User has Certain Permission
+### ```GET /admin/<username>/<permissionName>```
+### Responses:
+200 OK
+```json
+{
+    "permission":      {"type": "string"},
+    "username":        {"type": "string"},
+    "hasPermission":   {"type": "boolean"}
+}
+```
+
+404 NOT FOUND - User not found
+```json
+{
+    "error": "User <username> does not exist"
+}
+```
+
+404 NOT FOUND - Permission does not exist
+```json
+{
+    "error": "Permissions <permissionName> does not exist"
+}
+```
+
+## Add Single Permission to User
+### ```POST /admin/<username>/<permissionName>```
+### Responses:
+201 CREATED
+```json
+{
+    "message": "Permission <permissionName> has been added to <username>"
+}
+```
+
+409 CONFLICT - User already has permission
+```json
+{
+    "error": "User <username> already has permissions <permissionName>. Nothing was done"
+}
+```
+
+404 NOT FOUND - User not found
+```json
+{
+    "error": "User <username> does not exist"
+}
+```
+
+404 NOT FOUND - Permission does not exist
+```json
+{
+    "error": "Permissions <permissionName> does not exist"
+}
+```
+
+## Remove Single Permission from User
+### ```DELETE /admin/<username>/<permissionName>```
+### Responses:
+200 OK
+```json
+{
+    "message": "Permission <permissionName> has been removed from <username>"
+}
+```
+
+409 CONFLICT - User does not have the permission
+```json
+{
+    "error": "User <username> does not have <permissionName>. Nothing to remove"
+}
+```
+
+404 NOT FOUND - User not found
+```json
+{
+    "error": "User <username> does not exist"
+}
+```
+
+404 NOT FOUND - Permission does not exist
+```json
+{
+    "error": "Permissions <permissionName> does not exist"
+}
+```
 
 # Authentication
 ## Authenticate and Receive token
