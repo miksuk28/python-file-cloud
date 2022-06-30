@@ -316,15 +316,155 @@ The following section contains endpoints related to creating, updating and delet
     "exp":   {"type": "string"}
 }
 ```
+403 FORBIDDEN
+```json
+{
+    "error": "Incorrect password"
+}
+```
 404 NOT FOUND
 ```json
 {
     "error": "User does not exist"
 }
 ```
+
+# File and Directory Operations
+## Create a new Directory
+#### ```POST /files/<parentDirectory>/<newDirectory>```
+
+### Responses:
+201 CREATED
+```json
+{
+    "message": "Directory /path/to/dir has been created"
+}
+```
+409 CONFLICT
+```json
+{
+    "error": "The directory /path/to/dir already exists"
+}
+```
+
 403 FORBIDDEN
 ```json
 {
-    "error": "Incorrect password"
+    "error": "The directory name <newDirectory> is not allowed because it starts with a dot"
+}
+```
+
+## Rename an Existing Directory
+#### ```PUT /files/<parentDirectory>/<newName>```
+
+#### Expected Schema:
+```json
+{
+    "newName": {"type": "string"}
+}
+```
+
+201 CREATED
+```json
+{
+    "message": "Directory /path/to/<oldName> has been renamed to <newName>"
+}
+```
+409 CONFLICT
+```json
+{
+    "error": "The directory /path/to/dir already exists"
+}
+```
+
+403 FORBIDDEN
+```json
+{
+    "error": "The directory name <newName> is not allowed because it starts with a dot"
+}
+```
+
+## Delete a Directory and its Content
+#### ```DELETE /files/<parentDirectory>/<directoryToDelete>```
+
+### Responses:
+200 OK
+```json
+{
+    "message": "Directory /path/to/dir has been deleted"
+}
+```
+404 NOT FOUND
+```json
+{
+    "message": "Directory /path/to/dir does not exist"
+}
+```
+
+## Get Directory Content
+response.content will contain an array of all files in the current directory
+#### ```GET /files/<parentDirectory>/<directory>```
+### Responses:
+200 OK
+```json
+{
+    "parentDirectory":          {"type": "string"},
+    "directoryName":            {"type": "string"},
+    "absolutePath":             {"type": "string"},
+    "content": [
+        {
+            "name":             {"type": "string"},
+            "fileType":         {"type": "string"},
+            "isImage":          {"type": "boolean"},
+            "isVideo":          {"type": "boolean"},
+            "previewPath":      {"type": "string"},
+            "absolutePath":     {"type": "string"},
+            "fileSize":         {"type": "number"}
+        }
+        ...
+
+    ]
+}
+```
+
+## Upload file(s)
+Upload files as multipart/form-data. Make sure each file entry in the request is named *file*
+#### ```POST /files/<parentDirectory>/<directory>```
+#### Expected Headers:
+```
+Content-Type: multipart/form-data
+```
+Body:
+```
+file: <file1>
+file: <file2>
+file: <file3>
+```
+
+### Responses:
+201 CREATED
+```json
+{
+    "message": "Upload operation completed successfully. All files were uploaded",
+    "uploadedFiles": {"type": "array"}
+}
+```
+
+201 CREATED - With conflicts
+```json
+{
+    "message": "Not all filed were uploaded due to conflicts",
+    "uploadedFiles":  {"type": "array"},
+    "conflicts":      {"type": "array"},
+    "forbiddenNames": {"type": "array"}
+}
+```
+
+409 CONFLICT - No files uploaded
+```json
+{
+    "error": "No files were uploaded due to conflicts",
+    "conflicts":      {"type": "array"},
+    "forbiddenNames": {"type": "array"}
 }
 ```
