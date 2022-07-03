@@ -1,28 +1,58 @@
-import sqlite3
 import sys
+import sqlite3
 from sqlite3 import Error
 
-db_file = "pycloud/pycloud.db"
 
-def connect_db(db_file):
-    try:
-        conn = sqlite3.connect(db_file)
-        conn.row_factory = sqlite3.Row
-        
-        return conn
-    except Error as e:
-        print("Unable to connect to database. Quitting...")
-        sys.exit(1)
+class DatabaseWrapper:
+    def __init__(self, db_file, schema_location):
+        self._db_file = db_file
+        self._schema = schema_location
+        self.conn = self._connect_to_db()
+
+        # Make sure database schema is correct
+        self._create_db()
 
 
-def create_db(conn):
-    with open("pycloud/modules/sql/db_schema.sql") as f:
-        schema = f.read()
+    def _connect_to_db(self):
+        try:
+            conn = sqlite3.connect(self._db_file)
+            conn.row_factory = sqlite3.Row
 
-        conn.executescript(schema)
+            return conn
+        except Error as e:
+            print(f"{e}\n\nFatal Error occured: Unable to connect to database. Quitting ...")
+            sys.exit(1)
 
 
-conn = connect_db(db_file)
-create_db(conn)
+    def _create_db(self):
+        with open(self._schema, "r") as f:
+            schema = f.read()
+            self.conn.executescript(schema)
 
 
+    def list_and_dictify(self, list):
+        new_list = []
+        for row in list:
+            new_list.append(dict(row))
+
+        return new_list
+
+
+    def db_execute(sql, params=(), commit=True, fetch=None):
+        cur = self.conn.cursor()
+        cur.execute(sql, params)
+        if commit:
+            self.conn.commit()
+
+        if fetch == "all":
+            return self.list_and_dictify(cur.fetchall())
+        elif fetch == 1:
+            return dict(cur.fetchone())
+        elif not fetch:
+            return 
+
+        return self.list_and_dictify(cur.fetchmany(fetch))
+
+
+# To be imported by other modules that need DB access
+conn = DatabaseWrapper("pycloud.db", "modules/sql/db_schema.sql")
