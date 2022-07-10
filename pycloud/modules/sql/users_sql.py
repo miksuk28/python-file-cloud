@@ -7,7 +7,7 @@ class UserManagerSqlStatements:
     '''
     
     get_user_id = '''
-        SELECT id FROM users WHERE username=%s
+        SELECT id FROM users WHERE username=?
     '''
 
     register_password = '''

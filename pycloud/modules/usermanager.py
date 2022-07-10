@@ -25,7 +25,7 @@ class UserManager:
 
 
     def _check_if_user_exists(self, username):
-        user = self.conn.db_execute(sql_stmt.get_user_id, (username,), fetch=1)
+        user = self._conn.db_execute(sql_stmt.get_user_id, (username,), fetch=1)
         if user is not None:
             return True
 

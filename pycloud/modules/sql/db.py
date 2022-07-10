@@ -15,7 +15,7 @@ class DatabaseWrapper:
 
     def _connect_to_db(self):
         try:
-            conn = sqlite3.connect(self._db_file)
+            conn = sqlite3.connect(self._db_file, check_same_thread=False)
             conn.row_factory = sqlite3.Row
 
             return conn
@@ -38,16 +38,25 @@ class DatabaseWrapper:
         return new_list
 
 
-    def db_execute(sql, params=(), commit=True, fetch=None):
+    def db_execute(self, sql, params=(), commit=True, fetch=None):
         cur = self.conn.cursor()
         cur.execute(sql, params)
         if commit:
             self.conn.commit()
 
+
         if fetch == "all":
-            return self.list_and_dictify(cur.fetchall())
+            result = cur.fetchall()
+            if result is not None:
+                return self.list_and_dictify(result)
+
+            return
         elif fetch == 1:
-            return dict(cur.fetchone())
+            result = cur.fetchone()
+            if result is not None:
+                return dict(result)
+            
+            return
         elif not fetch:
             return 
 

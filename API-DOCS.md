@@ -91,7 +91,7 @@ The following section contains endpoints related to creating, updating and delet
     "quotaGroup":                   {"type": "string"}
 }
 
-"required": ["username", "autoGeneratePassword", "email", "storageQuota"]
+"required": ["autoGeneratePassword", "email"]
 ```
 ### Responses:
 201 CREATED
