@@ -2,6 +2,7 @@
 CREATE TABLE IF NOT EXISTS "users" (
 	"id"	INTEGER,
 	"username"	TEXT(30) NOT NULL UNIQUE,
+	"email"		TEXT(80) NOT NULL UNIQUE,
 	"fname"  TEXT(40),
 	"lname"  TEXT(40),
 	"disabled"  BOOLEAN NOT NULL,

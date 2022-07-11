@@ -48,20 +48,11 @@ The following section contains endpoints related to creating, updating and delet
 ```json
 {
     "username":                     {"type": "string"},
-    "changePasswordOnNextLogin":    {"type": "boolean"},
     "fname":                        {"type": "string"},
     "lname":                        {"type": "string"},
-    "blockLogin":                   {"type": "boolean"},
-    "blockLoginReason":             {"type": "string"},
+    "disabled":                   {"type": "boolean"},
     "email":                        {"type": "string"},
-    "permissions":                  {"type": "array"},
-    "storage":                      {
-                                        "quota":        {"type": "number"},
-                                        "quotaGroup":   {"type": "string"},
-                                        "usage":        {"type": "number"},
-                                        "absolutePath": {"type": "string"}
-
-                                    }
+    "permissions":                  {"type": "array"}
 }
 ```
 
@@ -78,20 +69,15 @@ The following section contains endpoints related to creating, updating and delet
 #### Expected Schema:
 ```json
 {
-    "username":                     {"type": "string"},
     "password":                     {"type": "string"},
-    "autoGeneratePassword":         {"type": "boolean"},
-    "changePasswordOnFirstLogin":   {"type": "boolean"},
     "fname":                        {"type": "string"},
     "lname":                        {"type": "string"},
     "blockLogin":                   {"type": "boolean"},
     "blockLoginReason":             {"type": "string"},
     "email":                        {"type": "string"},
-    "storageQuota":                 {"type": "number"},
-    "quotaGroup":                   {"type": "string"}
 }
 
-"required": ["autoGeneratePassword", "email"]
+"required": ["password", "email"]
 ```
 ### Responses:
 201 CREATED

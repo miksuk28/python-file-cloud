@@ -44,12 +44,23 @@ class UserManager:
         return hashed.hex()
 
 
-    def create_user(self, username, password, disabled=False, fname=None, lname=None):
+    def _check_if_email_in_use(self, email):
+        email_owner = self._conn.db_execute(sql_stmt.check_email, (email,), fetch=1)
+        if email_owner is None:
+            return False
+
+        return True
+
+
+    def create_user(self, username, password, email, disabled=False, fname=None, lname=None):
         if self._check_if_user_exists(username):
             raise exc.UserAlreadyExists(username)
 
+        if self._check_if_email_in_use(email):
+            raise exc.EmailAlreadyInUse(email)
+
         self._conn.db_execute(sql_stmt.create_user,
-            (username, fname, lname, disabled,)
+            (username, email, fname, lname, disabled,)
         )
 
         salt = gensalt().hex()
@@ -58,3 +69,27 @@ class UserManager:
         self._conn.db_execute(sql_stmt.register_password,
             (username, hashed_password, salt,)
         )
+
+
+    def get_user(self, username):
+        user = self._conn.db_execute(sql_stmt.get_user, (username,), fetch=1)
+
+        if user is None:
+            raise exc.UserDoesNotExist(username)
+
+        return user
+
+
+    def query_users(self, fname, lname, fetch):
+        users = self._conn.db_execute(sql_stmt.query_users,
+            (f"%{fname}%", f"%{lname}%"), fetch=fetch
+        )
+
+        return users
+
+
+    def delete_user(self, username):
+        if not self._check_if_user_exists(username):
+            raise exc.UserDoesNotExist(username)
+
+        self._conn.db_execute(sql.delete_user, (username,))
